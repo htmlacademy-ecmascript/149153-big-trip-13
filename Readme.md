@@ -1,7 +1,7 @@
 # Проект «Большое путешествие» [![Build status][travis-image]][travis-url]
 
 * Студент: [Vasily Zinchenko](https://up.htmlacademy.ru/ecmascript/13/user/149153).
-* Наставник: `Неизвестно`.
+* Наставник: [АртурГалимов](https://htmlacademy.ru/profile/id1237543).
 
 ---
 
