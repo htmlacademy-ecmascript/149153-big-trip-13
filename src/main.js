@@ -5,8 +5,11 @@ import {createSortForm} from "./view/sort";
 import {createContent} from "./view/content";
 import {createAddForm} from "./view/addForm";
 import {createPoint} from "./view/point";
+import {generateTripPoint} from "./mock/tripPoint";
 
-const POINT_COUNT = 3;
+const POINT_COUNT = 20;
+
+const points = new Array(POINT_COUNT).fill().map(generateTripPoint);
 
 const render = (container, markup, place) => {
   container.insertAdjacentHTML(place, markup);
@@ -43,10 +46,10 @@ render(tripEventsElement, createContent(), `beforeend`);
 /** Рендерим Форму создания */
 const tripEventsListElement = tripEventsElement.querySelector(`.trip-events__list`);
 
-render(tripEventsListElement, createAddForm(), `afterbegin`);
+render(tripEventsListElement, createAddForm(points[0]), `afterbegin`);
 
 /** Рендерим Точка маршрута */
-for (let i = 0; i < POINT_COUNT; i++) {
-  render(tripEventsListElement, createPoint(), `beforeend`);
+for (let i = 1; i < POINT_COUNT; i++) {
+  render(tripEventsListElement, createPoint(points[i]), `beforeend`);
 }
 
