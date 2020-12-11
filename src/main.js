@@ -1,55 +1,80 @@
-import {createRouteInformation} from "./view/information";
-import {createMenu} from "./view/menu";
-import {createFilters} from "./view/filter";
-import {createSortForm} from "./view/sort";
-import {createContent} from "./view/content";
+import RouteInformationView from "./view/information";
+import MenuView from "./view/menu";
+import FilterView from "./view/filter";
+import SortForm from "./view/sort";
+import ContentView from "./view/content";
 import {createAddForm} from "./view/addForm";
-import {createPoint} from "./view/point";
+import EditView from "./view/editForm";
+import PointView from "./view/point";
 import {generateTripPoint} from "./mock/tripPoint";
+import {RenderPosition, renderElement} from "./utils";
 
 const POINT_COUNT = 20;
 
 const points = new Array(POINT_COUNT).fill().map(generateTripPoint);
 
-const render = (container, markup, place) => {
-  container.insertAdjacentHTML(place, markup);
-};
-
 /** Рендерим Маршрут и стоимость */
 const headerElement = document.querySelector(`.page-header`);
 const tripMainElement = headerElement.querySelector(`.trip-main`);
 
-render(tripMainElement, createRouteInformation(), `afterbegin`);
+renderElement(tripMainElement, new RouteInformationView().getElement(), RenderPosition.AFTEREND);
 
 /** Рендерим Меню */
 const tripControlsElement = tripMainElement.querySelector(`.trip-controls`);
-const menuElement = tripControlsElement.querySelector(`h2:first-child`);
 
-render(menuElement, createMenu(), `afterend`);
+renderElement(tripControlsElement.firstElementChild, new MenuView().getElement(), RenderPosition.AFTERBEGIN);
 
 /** Рендерим Фильтры */
-const filtersElement = tripControlsElement.querySelector(`h2:last-child`);
-
-render(filtersElement, createFilters(), `afterend`);
+renderElement(tripControlsElement.lastElementChild, new FilterView().getElement(), RenderPosition.AFTERBEGIN);
 
 /** Рендерим Сортировку */
 const mainElement = document.querySelector(`.page-main`);
 const tripEventsElement = mainElement.querySelector(`.trip-events`);
-const sortElement = tripEventsElement.querySelector(`h2:first-child`);
 
-render(sortElement, createSortForm(), `afterend`);
+renderElement(tripEventsElement.firstElementChild, new SortForm().getElement(), RenderPosition.AFTERBEGIN);
 
 /** Рендерим Контент */
-
-render(tripEventsElement, createContent(), `beforeend`);
+const content = new ContentView();
+renderElement(tripEventsElement, content.getElement(), RenderPosition.BEFOREND);
 
 /** Рендерим Форму создания */
 const tripEventsListElement = tripEventsElement.querySelector(`.trip-events__list`);
 
-render(tripEventsListElement, createAddForm(points[0]), `afterbegin`);
+// renderElement(tripEventsListElement, createAddForm(points[0]), `afterbegin`);
+
+const renderPoint = (pointList , point) => {
+  const pointElement = new PointView(point);
+  const editForm = new EditView(point);
+  
+  const replacePointToForm = () => {
+    pointList.replaceChild(editForm.getElement(),pointElement.getElement());
+  }
+
+  const replcaeFormToPoint = () =>{
+    pointList.replaceChild(pointElement.getElement(),editForm.getElement());
+  } 
+
+  pointElement.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, function () {
+    replacePointToForm();
+  });
+
+  editForm.getElement().querySelector(`.event--edit`).addEventListener(`submit`, function (evt) {
+    evt.preventDefault();
+    replcaeFormToPoint();
+  });
+
+  editForm.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, function () {
+    replcaeFormToPoint();
+  });
+
+  renderElement(pointList, pointElement.getElement(), RenderPosition.BEFOREND);
+};
+
+
 
 /** Рендерим Точка маршрута */
-for (let i = 1; i < POINT_COUNT; i++) {
-  render(tripEventsListElement, createPoint(points[i]), `beforeend`);
+for (let i = 0; i < POINT_COUNT; i++) {
+  renderPoint(content.getElement(), points[i]);
+ 
 }
 
