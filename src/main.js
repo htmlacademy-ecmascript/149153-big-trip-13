@@ -6,18 +6,22 @@ import ContentView from "./view/content";
 import {createAddForm} from "./view/addForm";
 import EditView from "./view/editForm";
 import PointView from "./view/point";
+import EmptyList from "./view/noPoints";
 import {generateTripPoint} from "./mock/tripPoint";
 import {RenderPosition, renderElement} from "./utils";
 
-const POINT_COUNT = 20;
+const POINT_COUNT = 0;
 
 const points = new Array(POINT_COUNT).fill().map(generateTripPoint);
+
+const mainElement = document.querySelector(`.page-main`);
+const tripEventsElement = mainElement.querySelector(`.trip-events`);
 
 /** Рендерим Маршрут и стоимость */
 const headerElement = document.querySelector(`.page-header`);
 const tripMainElement = headerElement.querySelector(`.trip-main`);
 
-renderElement(tripMainElement, new RouteInformationView().getElement(), RenderPosition.AFTEREND);
+
 
 /** Рендерим Меню */
 const tripControlsElement = tripMainElement.querySelector(`.trip-controls`);
@@ -26,12 +30,6 @@ renderElement(tripControlsElement.firstElementChild, new MenuView().getElement()
 
 /** Рендерим Фильтры */
 renderElement(tripControlsElement.lastElementChild, new FilterView().getElement(), RenderPosition.AFTERBEGIN);
-
-/** Рендерим Сортировку */
-const mainElement = document.querySelector(`.page-main`);
-const tripEventsElement = mainElement.querySelector(`.trip-events`);
-
-renderElement(tripEventsElement.firstElementChild, new SortForm().getElement(), RenderPosition.AFTERBEGIN);
 
 /** Рендерим Контент */
 const content = new ContentView();
@@ -54,27 +52,43 @@ const renderPoint = (pointList , point) => {
     pointList.replaceChild(pointElement.getElement(),editForm.getElement());
   } 
 
+  const onEscapePress = (evt) => {
+    if (evt.key === `Escape` || evt.key === `Esc`) {
+      evt.preventDefault();
+      replcaeFormToPoint();
+      document.removeEventListener(`keydown`, onEscapePress)
+    }
+  }
+
   pointElement.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, function () {
     replacePointToForm();
+    document.addEventListener(`keydown`, onEscapePress)
   });
 
   editForm.getElement().querySelector(`.event--edit`).addEventListener(`submit`, function (evt) {
     evt.preventDefault();
     replcaeFormToPoint();
+    document.removeEventListener(`keydown`, onEscapePress)
   });
 
   editForm.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, function () {
     replcaeFormToPoint();
+    document.removeEventListener(`keydown`, onEscapePress)
   });
 
   renderElement(pointList, pointElement.getElement(), RenderPosition.BEFOREND);
 };
 
-
-
-/** Рендерим Точка маршрута */
-for (let i = 0; i < POINT_COUNT; i++) {
-  renderPoint(content.getElement(), points[i]);
- 
+if(points.length){
+  renderElement(tripEventsElement.firstElementChild, new SortForm().getElement(), RenderPosition.AFTERBEGIN);
+  renderElement(tripMainElement, new RouteInformationView().getElement(), RenderPosition.AFTEREND);
+  
+  /** Рендерим Точка маршрута */
+  for (let i = 0; i < POINT_COUNT; i++) {
+    renderPoint(content.getElement(), points[i]);
+  }
+} else {
+  renderElement(tripEventsElement, new EmptyList().getElement(), RenderPosition.BEFOREND);
 }
+
 
