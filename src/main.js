@@ -10,7 +10,7 @@ import EmptyList from "./view/noPoints";
 import {generateTripPoint} from "./mock/tripPoint";
 import {RenderPosition, renderElement} from "./utils";
 
-const POINT_COUNT = 0;
+const POINT_COUNT = 20;
 
 const points = new Array(POINT_COUNT).fill().map(generateTripPoint);
 
@@ -48,31 +48,30 @@ const renderPoint = (pointList , point) => {
     pointList.replaceChild(editForm.getElement(),pointElement.getElement());
   }
 
-  const replcaeFormToPoint = () =>{
+  const replaceFormToPoint = () =>{
     pointList.replaceChild(pointElement.getElement(),editForm.getElement());
   } 
 
   const onEscapePress = (evt) => {
     if (evt.key === `Escape` || evt.key === `Esc`) {
       evt.preventDefault();
-      replcaeFormToPoint();
+      replaceFormToPoint();
       document.removeEventListener(`keydown`, onEscapePress)
     }
   }
 
-  pointElement.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, function () {
+  pointElement.setClickHandler(() =>{
     replacePointToForm();
     document.addEventListener(`keydown`, onEscapePress)
   });
 
-  editForm.getElement().querySelector(`.event--edit`).addEventListener(`submit`, function (evt) {
-    evt.preventDefault();
-    replcaeFormToPoint();
+  editForm.setSumbitHandler(() =>{
+    replaceFormToPoint();
     document.removeEventListener(`keydown`, onEscapePress)
   });
 
-  editForm.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, function () {
-    replcaeFormToPoint();
+  editForm.setClickHandler(() => {
+    replaceFormToPoint();
     document.removeEventListener(`keydown`, onEscapePress)
   });
 
