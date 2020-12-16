@@ -29,8 +29,8 @@ const createSortFormElement = () => {
 </form>`;
 };
 
-export default class SortForm extends AbstractView{
- 
+export default class SortForm extends AbstractView {
+
   getTemplate() {
     return createSortFormElement();
   }

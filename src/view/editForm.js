@@ -170,19 +170,19 @@ const createEditFormElement = (point) => {
 `;
 };
 
-export default class Edit extends AbstractView{
+export default class Edit extends AbstractView {
   constructor(point) {
     super();
     this._point = point;
-    this._clickHandler = this._clickHandler.bind(this)
+    this._clickHandler = this._clickHandler.bind(this);
   }
 
-  _clickHandler(evt){
+  _clickHandler(evt) {
     evt.preventDefault();
     this._callback.click();
   }
 
-  _submitHandler(evt){
+  _submitHandler(evt) {
     evt.preventDefault();
     this._callback.submit();
   }
@@ -193,12 +193,12 @@ export default class Edit extends AbstractView{
 
   setClickHandler(callback) {
     this._callback.click = callback;
-    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._clickHandler)
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._clickHandler);
   }
 
   setSumbitHandler(callback) {
     this._callback.submit = callback;
-    this.getElement().querySelector(`.event--edit`).addEventListener(`submit`, this._submitHandler)
+    this.getElement().querySelector(`.event--edit`).addEventListener(`submit`, this._submitHandler);
   }
 
 }

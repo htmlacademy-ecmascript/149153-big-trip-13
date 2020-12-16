@@ -1,10 +1,10 @@
 import {createElement} from "../utils";
 
 export default class Abstract {
-  constructor () {
-    if (new.target === Abstract){
-      throw new console.error(`Can't instantiate Abstract, only concrete one.`);
-    };
+  constructor() {
+    if (new.target === Abstract) {
+      throw new Error(`Can't instantiate Abstract, only concrete one.`);
+    }
 
     this._element = null;
     this._callback = {};
