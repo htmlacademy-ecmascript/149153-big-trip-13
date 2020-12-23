@@ -60,7 +60,7 @@ const generateOffer = () => {
 
 export const generateTripPoint = () => {
   return {
-    id:generateId(),
+    id: generateId(),
     type: getRandomValue(TYPE_TRIP_POINTS),
     city: getRandomValue(CITY_NAMES),
     beginDate: generateDate(),
