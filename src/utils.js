@@ -1,3 +1,4 @@
+import Abstract from "./view/abstract";
 
 export const RenderPosition = {
   AFTERBEGIN: `afterbegin`,
@@ -10,7 +11,13 @@ export const renderTemplate = (container, markup, place) => {
   container.insertAdjacentHTML(place, markup);
 };
 
-export const renderElement = (container, element, place) => {
+export const render = (container, element, place) => {
+  if (container instanceof Abstract) {
+    container = container.getElement();
+  }
+  if (element instanceof Abstract){
+    element = element.getElement();
+  }
   switch (place) {
     case RenderPosition.AFTEREND:
       container.prepend(element);
@@ -29,3 +36,40 @@ export const createElement = (template) => {
   newElement.innerHTML = template;
   return newElement.firstElementChild;
 };
+
+export const POINT_COUNT = 20;
+
+export const replace = (newChild, oldChild) => {
+  if(oldChild instanceof Abstract) {
+    oldChild = oldChild.getElement()
+  }
+
+  if(newChild instanceof Abstract) {
+    newChild = newChild.getElement()
+  }
+
+  const parent = oldChild.parentElement;
+
+  if (parent === null || oldChild === null || newChild === null) {
+    throw new Error(`Can't replace unexisting elements`);
+  }
+  
+  parent.replaceChild(newChild, oldChild);
+}
+
+export const remove = (component) => {
+  if (!(component instanceof Abstract)){
+    throw new Error(`Can remove only components`);
+  }
+  component.getElement().remove();
+  component.removeElement();
+}
+
+export const updateItem = (items, update) => {
+  const index = items.findIndex((item) => item.id === update.id);
+
+  if (index === -1 ){
+    return items;
+  }
+  return [...items.slice(0, index),update,...items.slice(index + 1)]
+}

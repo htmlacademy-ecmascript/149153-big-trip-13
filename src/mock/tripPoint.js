@@ -16,6 +16,8 @@ const MAX_PRICE_OFFER = 100;
 const TITLE_TEXT = [`Add luggage`, `Switch to comfort class`, `Add meal`, `Choose seats`, `Travel by train`];
 const MAX_OFFERS_COUNT = 5;
 
+const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
+
 const getRandomValue = (array) => {
   return array[Math.floor(Math.random() * array.length)];
 };
@@ -58,10 +60,12 @@ const generateOffer = () => {
 
 export const generateTripPoint = () => {
   return {
+    id:generateId(),
     type: getRandomValue(TYPE_TRIP_POINTS),
     city: getRandomValue(CITY_NAMES),
     beginDate: generateDate(),
     endDate: generateDate(),
+    isFavorite: false,
     price: getRandomInteger(MIN_PRICE, MAX_PRICE),
     offers: generateOffer(),
     destination: {

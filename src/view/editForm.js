@@ -184,7 +184,7 @@ export default class Edit extends AbstractView {
 
   _submitHandler(evt) {
     evt.preventDefault();
-    this._callback.submit();
+    this._callback.submit(this._point);
   }
 
   getTemplate() {
