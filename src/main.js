@@ -14,8 +14,6 @@ const tripEventsElement = mainElement.querySelector(`.trip-events`);
 const headerElement = document.querySelector(`.page-header`);
 const tripMainElement = headerElement.querySelector(`.trip-main`);
 
-
-
 /** Рендерим Меню */
 const tripControlsElement = tripMainElement.querySelector(`.trip-controls`);
 
@@ -28,11 +26,11 @@ render(tripControlsElement.lastElementChild, new FilterView().getElement(), Rend
 const tripPresenter = new TripPresenter(tripEventsElement);
 
 /** Рендерим Форму создания */
-const tripEventsListElement = tripEventsElement.querySelector(`.trip-events__list`);
+// const tripEventsListElement = tripEventsElement.querySelector(`.trip-events__list`);
 
 // renderElement(tripEventsListElement, createAddForm(points[0]), `afterbegin`);
 
-if(points.length){
+if (points.length) {
   render(tripMainElement, new RouteInformationView().getElement(), RenderPosition.AFTEREND);
 }
 

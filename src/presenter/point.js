@@ -18,6 +18,7 @@ export default class Point {
     this._mode = Mode.DEFAULT;
 
     this._handelEditClick = this._handelEditClick.bind(this);
+    this._handelFormClick = this._handelFormClick.bind(this);
     this._handelFormSubmit = this._handelFormSubmit.bind(this);
     this._escapeKeyDownHandler = this._escapeKeyDownHandler.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
@@ -34,7 +35,7 @@ export default class Point {
 
     this._pointComponent.setClickHandler(this._handelEditClick);
     this._pointComponent.setFavoriteClickHandler(this._handleFavoriteClick);
-    this._editComponent.setClickHandler(this._handelEditClick);
+    this._editComponent.setClickHandler(this._handelFormClick);
     this._editComponent.setSumbitHandler(this._handelFormSubmit);
 
     if (prevPointComponent === null || prevEditComponent === null) {
@@ -88,6 +89,10 @@ export default class Point {
 
   _handelEditClick() {
     this._replacePointToForm();
+  }
+
+  _handelFormClick() {
+    this._replaceFormToPoint();
   }
 
   _handelFormSubmit(point) {
