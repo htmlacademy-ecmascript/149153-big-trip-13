@@ -10,7 +10,7 @@ const createOffersElement = ({title, price}) =>{
 };
 
 const createPointElement = (point) => {
-  const {beginDate, endDate, type, city, price, offers} = point;
+  const {beginDate, endDate, type, city, price, offers, isFavorite} = point;
   const date = dayjs(beginDate).format(`MMM DD`);
   const fullDate = dayjs(beginDate).format(`YYYY-MM-DD`);
   const startTime = dayjs(beginDate).format(`HH:mm`);
@@ -18,6 +18,8 @@ const createPointElement = (point) => {
   const startTimeFull = dayjs(beginDate).format(`YYYY-MM-DDTHH:mm`);
   const endTimeFull = dayjs(endDate).format(`YYYY-MM-DDTHH:mm`);
   const durationTime = dayjs(startTimeFull).diff(dayjs(endTimeFull), `minute`);
+
+  const favoriteClassName = isFavorite ? `event__favorite-btn--active` : ``;
 
   let offersList = ``;
 
@@ -47,7 +49,7 @@ const createPointElement = (point) => {
     <ul class="event__selected-offers">
       ${offersList}
     </ul>
-    <button class="event__favorite-btn event__favorite-btn--active" type="button">
+    <button class="event__favorite-btn ${favoriteClassName}" type="button">
       <span class="visually-hidden">Add to favorite</span>
       <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
         <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
@@ -66,6 +68,7 @@ export default class Point extends AbstractView {
     super();
     this._point = point;
     this._clickHandler = this._clickHandler.bind(this);
+    this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
   }
 
   getTemplate() {
@@ -77,9 +80,19 @@ export default class Point extends AbstractView {
     this._callback.click();
   }
 
+  _favoriteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.favoriteClick();
+  }
+
   setClickHandler(callback) {
     this._callback.click = callback;
     this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._clickHandler);
+  }
+
+  setFavoriteClickHandler(callback) {
+    this._callback.favoriteClick = callback;
+    this.getElement().querySelector(`.event__favorite-btn`).addEventListener(`click`, this._favoriteClickHandler);
   }
 
 }
