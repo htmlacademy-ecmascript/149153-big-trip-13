@@ -1,7 +1,7 @@
 import NoPointsView from '../view/noPoints';
 import ContentView from '../view/content';
 import PointSortView from '../view/sort';
-import {render, RenderPosition, POINT_COUNT,updateItem} from '../utils';
+import {render, RenderPosition, POINT_COUNT, updateItem} from '../utils';
 import PointPresenter from '../presenter/point';
 
 
@@ -14,13 +14,13 @@ export default class Trip {
     this._contentComponent = new ContentView();
     this._pointSortComponent = new PointSortView();
 
-    this._handlePointChange = this._handlePointChange.bind(this)
-    this._handleModeChange = this._handleModeChange.bind(this)
+    this._handlePointChange = this._handlePointChange.bind(this);
+    this._handleModeChange = this._handleModeChange.bind(this);
   }
   init(points) {
     this._routePoints = points;
     render(this._routeContainer, this._contentComponent, RenderPosition.BEFOREND);
-    if(points.length){
+    if (points.length) {
       this._renderRoute();
     } else {
       this._renderNoPoints();
@@ -40,7 +40,7 @@ export default class Trip {
   _renderRoute() {
     this._renderSort();
     for (let i = 0; i < POINT_COUNT; i++) {
-      this._renderPoint(this._routePoints[i])
+      this._renderPoint(this._routePoints[i]);
     }
   }
   _clearPointList() {

@@ -5,10 +5,10 @@ import {replace, render, RenderPosition, remove} from '../utils';
 const Mode = {
   DEFAULT: `DEFAULT`,
   EDITING: `EDITING`
-}
+};
 
 export default class Point {
-  constructor(pointContainer, changeData,changeMode) {
+  constructor(pointContainer, changeData, changeMode) {
     this._pointContainer = pointContainer;
     this._changeData = changeData;
     this._changeMode = changeMode;
@@ -23,7 +23,7 @@ export default class Point {
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
   }
 
-  init(point){
+  init(point) {
     this._point = point;
 
     const prevPointComponent = this._pointComponent;
@@ -37,16 +37,16 @@ export default class Point {
     this._editComponent.setClickHandler(this._handelEditClick);
     this._editComponent.setSumbitHandler(this._handelFormSubmit);
 
-    if (prevPointComponent === null || prevEditComponent === null){
+    if (prevPointComponent === null || prevEditComponent === null) {
       render(this._pointContainer, this._pointComponent, RenderPosition.BEFOREND);
       return;
     }
 
-    if(this._mode === Mode.DEFAULT){
+    if (this._mode === Mode.DEFAULT) {
       replace(this._pointComponent, prevPointComponent);
     }
-    
-    if(this._mode === Mode.EDITING){
+
+    if (this._mode === Mode.EDITING) {
       replace(this._editComponent, prevEditComponent);
     }
 
@@ -61,7 +61,7 @@ export default class Point {
   }
 
   resetView() {
-    if(this._mode !== Mode.DEFAULT){
+    if (this._mode !== Mode.DEFAULT) {
       this._replaceFormToPoint();
     }
   }
@@ -82,7 +82,7 @@ export default class Point {
   _escapeKeyDownHandler(evt) {
     if (evt.key === `Escape` || evt.key === `Esc`) {
       evt.preventDefault();
-      this._replaceFormToPoint(); 
+      this._replaceFormToPoint();
     }
   }
 
@@ -91,7 +91,7 @@ export default class Point {
   }
 
   _handelFormSubmit(point) {
-    this._changeData(point)
+    this._changeData(point);
     this._replaceFormToPoint();
   }
 
