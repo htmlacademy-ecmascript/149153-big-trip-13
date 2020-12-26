@@ -1,4 +1,5 @@
 import Abstract from "./view/abstract";
+import dayjs from "dayjs";
 
 export const RenderPosition = {
   AFTERBEGIN: `afterbegin`,
@@ -72,5 +73,25 @@ export const updateItem = (items, update) => {
     return items;
   }
   return [...items.slice(0, index), update, ...items.slice(index + 1)];
-}
-;
+};
+
+export const SortType = {
+  DAY: `day`,
+  TIME: `time`,
+  PRICE: `price`
+};
+
+export const sortDate = (pointA, pointB) => {
+  return dayjs(pointB.beginDate).diff(dayjs(pointA.beginDate));
+};
+
+export const sortPrice = (a, b) =>{
+  if (a.price < b.price) {
+    return -1;
+  } else if (a.price > b.price) {
+    return 1;
+  } else {
+    return 0;
+  }
+
+};
