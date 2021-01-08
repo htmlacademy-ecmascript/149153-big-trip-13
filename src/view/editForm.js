@@ -1,4 +1,4 @@
-import AbstractView from "./abstract";
+import SmartView from "./smart";
 import dayjs from 'dayjs';
 
 const createEditFormElement = (point) => {
@@ -13,7 +13,7 @@ const createEditFormElement = (point) => {
       <div class="event__type-wrapper">
         <label class="event__type  event__type-btn" for="event-type-toggle-1">
           <span class="visually-hidden">Choose event type</span>
-          <img class="event__type-icon" width="17" height="17" src="img/icons/flight.png" alt="Event type icon">
+          <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
         </label>
         <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -170,11 +170,14 @@ const createEditFormElement = (point) => {
 `;
 };
 
-export default class Edit extends AbstractView {
+export default class Edit extends SmartView {
   constructor(point) {
     super();
     this._point = point;
+    this._data = Edit.parsePointToData(point);
     this._clickHandler = this._clickHandler.bind(this);
+    this._destinationInputHandler = this._destinationInputHandler.bind(this);
+    this._typeChangeHandler = this._typeChangeHandler.bind(this);
   }
 
   _clickHandler(evt) {
@@ -184,11 +187,55 @@ export default class Edit extends AbstractView {
 
   _submitHandler(evt) {
     evt.preventDefault();
-    this._callback.submit(this._point);
+    this._callback.submit(Edit.parseDataToPoint(this._data));
   }
 
   getTemplate() {
     return createEditFormElement(this._point);
+  }
+
+  updateElement() {
+    let prevElement = this.getElement();
+    const parent = prevElement.parentElement;
+    this.removeElement();
+
+    const newElement = this.getElement();
+    parent.replaceChild(newElement, prevElement);
+  }
+
+  updateData(update, justDataUpdating) {
+    if (!update) {
+      return;
+    }
+
+    this._data = Object.assign({}, this._data, update);
+
+    if (justDataUpdating) {
+      return;
+    }
+
+    this.updateElement();
+  }
+
+  static parsePointToData(point) {
+    return Object.assign({}, point);
+  }
+
+  static parseDataToPoint(data) {
+    data = Object.assign({}, data);
+    return data;
+  }
+
+  _destinationInputHandler(evt) {
+    evt.preventDefault();
+    this.updateData({description: evt.target.value}, true);
+  }
+
+  _typeChangeHandler(evt) {
+    evt.preventDefault();
+    this.updateData({
+      type: evt.target.value
+    });
   }
 
   setClickHandler(callback) {
@@ -201,4 +248,12 @@ export default class Edit extends AbstractView {
     this.getElement().querySelector(`.event--edit`).addEventListener(`submit`, this._submitHandler);
   }
 
+  setTypeHandler(callback) {
+    this._callback.changeType = callback;
+    this.getElement().querySelector(`.event__type-input`).addEventListener(`change`, this._submitHandler);
+  }
+
+  reset(point) {
+    this.updateData(Edit.parsePointToData(point));
+  }
 }
