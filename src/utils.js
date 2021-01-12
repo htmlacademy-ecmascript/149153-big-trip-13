@@ -85,7 +85,7 @@ export const sortDate = (pointA, pointB) => {
   return dayjs(pointB.beginDate).diff(dayjs(pointA.beginDate));
 };
 
-export const sortPrice = (a, b) =>{
+export const sortPrice = (a, b) => {
   if (a.price < b.price) {
     return -1;
   } else if (a.price > b.price) {
@@ -95,3 +95,5 @@ export const sortPrice = (a, b) =>{
   }
 
 };
+
+export const TYPE_TRIP_POINTS = [`taxi`, `bus`, `train`, `ship`, `transport`, `drive`, `flight`, `check-in`, `sightseeng`, `restaurant`];

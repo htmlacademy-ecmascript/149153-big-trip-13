@@ -1,11 +1,21 @@
 import SmartView from "./smart";
 import dayjs from 'dayjs';
+import {TYPE_TRIP_POINTS} from '../utils';
 
-const createEditFormElement = (point) => {
-  const {price, type, city, beginDate, endDate, destination: {description}} = point;
+const createTypeListTemplate = (currentType) => {
+  return TYPE_TRIP_POINTS.map((type)=>`<div class="event__type-item">
+  <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${currentType === type ? `checked` : ``}>
+  <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${type}</label>
+</div>`).join(``);
+};
+
+const createEditFormElement = (data) => {
+  const {price, type, city, beginDate, endDate, destination: {description}} = data;
 
   const startTimeFull = dayjs(beginDate).format(`YYYY-MM-DD HH:mm`);
   const endTimeFull = dayjs(endDate).format(`YYYY-MM-DD HH:mm`);
+
+  const typeListTemplate = createTypeListTemplate(type);
 
   return `  <li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
@@ -20,56 +30,7 @@ const createEditFormElement = (point) => {
         <div class="event__type-list">
           <fieldset class="event__type-group">
             <legend class="visually-hidden">Event type</legend>
-
-            <div class="event__type-item">
-              <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi">
-              <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-1">Taxi</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-bus-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="bus">
-              <label class="event__type-label  event__type-label--bus" for="event-type-bus-1">Bus</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-train-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="train">
-              <label class="event__type-label  event__type-label--train" for="event-type-train-1">Train</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-ship-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="ship">
-              <label class="event__type-label  event__type-label--ship" for="event-type-ship-1">Ship</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-transport-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="transport">
-              <label class="event__type-label  event__type-label--transport" for="event-type-transport-1">Transport</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-drive-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="drive">
-              <label class="event__type-label  event__type-label--drive" for="event-type-drive-1">Drive</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" checked>
-              <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-check-in-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="check-in">
-              <label class="event__type-label  event__type-label--check-in" for="event-type-check-in-1">Check-in</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-sightseeing-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="sightseeing">
-              <label class="event__type-label  event__type-label--sightseeing" for="event-type-sightseeing-1">Sightseeing</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-restaurant-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="restaurant">
-              <label class="event__type-label  event__type-label--restaurant" for="event-type-restaurant-1">Restaurant</label>
-            </div>
+            ${typeListTemplate}
           </fieldset>
         </div>
       </div>
@@ -173,11 +134,12 @@ const createEditFormElement = (point) => {
 export default class Edit extends SmartView {
   constructor(point) {
     super();
-    this._point = point;
     this._data = Edit.parsePointToData(point);
     this._clickHandler = this._clickHandler.bind(this);
     this._destinationInputHandler = this._destinationInputHandler.bind(this);
-    this._typeChangeHandler = this._typeChangeHandler.bind(this);
+    this._typeToggleHandler = this._typeToggleHandler.bind(this);
+
+    this._setInnerHandlers();
   }
 
   _clickHandler(evt) {
@@ -191,7 +153,7 @@ export default class Edit extends SmartView {
   }
 
   getTemplate() {
-    return createEditFormElement(this._point);
+    return createEditFormElement(this._data);
   }
 
   updateElement() {
@@ -201,6 +163,8 @@ export default class Edit extends SmartView {
 
     const newElement = this.getElement();
     parent.replaceChild(newElement, prevElement);
+
+    this.restoreHandlers();
   }
 
   updateData(update, justDataUpdating) {
@@ -217,6 +181,22 @@ export default class Edit extends SmartView {
     this.updateElement();
   }
 
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setSumbitHandler(this._callback.submit);
+  }
+
+  _setInnerHandlers() {
+    this.getElement().querySelector(`.event__type-group`).addEventListener(`click`, this._typeToggleHandler);
+    this.getElement().querySelector(`.event__input--destination`).addEventListener(`input`, this._destinationInputHandler);
+  }
+
+  _typeToggleHandler(evt) {
+    evt.preventDefault();
+    const type = evt.target.textContent.toLowerCase();
+    this.updateData({type});
+  }
+
   static parsePointToData(point) {
     return Object.assign({}, point);
   }
@@ -229,13 +209,6 @@ export default class Edit extends SmartView {
   _destinationInputHandler(evt) {
     evt.preventDefault();
     this.updateData({description: evt.target.value}, true);
-  }
-
-  _typeChangeHandler(evt) {
-    evt.preventDefault();
-    this.updateData({
-      type: evt.target.value
-    });
   }
 
   setClickHandler(callback) {
