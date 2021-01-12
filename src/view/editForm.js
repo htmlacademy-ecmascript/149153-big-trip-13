@@ -138,6 +138,7 @@ export default class Edit extends SmartView {
     this._clickHandler = this._clickHandler.bind(this);
     this._destinationInputHandler = this._destinationInputHandler.bind(this);
     this._typeToggleHandler = this._typeToggleHandler.bind(this);
+    this._submitHandler = this._submitHandler.bind(this);
 
     this._setInnerHandlers();
   }
@@ -223,7 +224,7 @@ export default class Edit extends SmartView {
 
   setTypeHandler(callback) {
     this._callback.changeType = callback;
-    this.getElement().querySelector(`.event__type-input`).addEventListener(`change`, this._submitHandler);
+    this.getElement().querySelector(`.event__type-input`).addEventListener(`change`, this._destinationInputHandler);
   }
 
   reset(point) {
