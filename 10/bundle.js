@@ -486,7 +486,7 @@ class Trip {
 /*!**********************!*\
   !*** ./src/utils.js ***!
   \**********************/
-/*! exports provided: RenderPosition, renderTemplate, render, createElement, POINT_COUNT, replace, remove, updateItem, SortType, sortDate, sortPrice */
+/*! exports provided: RenderPosition, renderTemplate, render, createElement, POINT_COUNT, replace, remove, updateItem, SortType, sortDate, sortPrice, TYPE_TRIP_POINTS */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -502,6 +502,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SortType", function() { return SortType; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sortDate", function() { return sortDate; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sortPrice", function() { return sortPrice; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TYPE_TRIP_POINTS", function() { return TYPE_TRIP_POINTS; });
 /* harmony import */ var _view_abstract__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./view/abstract */ "./src/view/abstract.js");
 /* harmony import */ var dayjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! dayjs */ "./node_modules/dayjs/dayjs.min.js");
 /* harmony import */ var dayjs__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(dayjs__WEBPACK_IMPORTED_MODULE_1__);
@@ -592,7 +593,7 @@ const sortDate = (pointA, pointB) => {
   return dayjs__WEBPACK_IMPORTED_MODULE_1___default()(pointB.beginDate).diff(dayjs__WEBPACK_IMPORTED_MODULE_1___default()(pointA.beginDate));
 };
 
-const sortPrice = (a, b) =>{
+const sortPrice = (a, b) => {
   if (a.price < b.price) {
     return -1;
   } else if (a.price > b.price) {
@@ -602,6 +603,8 @@ const sortPrice = (a, b) =>{
   }
 
 };
+
+const TYPE_TRIP_POINTS = [`taxi`, `bus`, `train`, `ship`, `transport`, `drive`, `flight`, `check-in`, `sightseeng`, `restaurant`];
 
 
 /***/ }),
@@ -690,14 +693,25 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _smart__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./smart */ "./src/view/smart.js");
 /* harmony import */ var dayjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! dayjs */ "./node_modules/dayjs/dayjs.min.js");
 /* harmony import */ var dayjs__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(dayjs__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils */ "./src/utils.js");
 
 
 
-const createEditFormElement = (point) => {
-  const {price, type, city, beginDate, endDate, destination: {description}} = point;
+
+const createTypeListTemplate = (currentType) => {
+  return _utils__WEBPACK_IMPORTED_MODULE_2__["TYPE_TRIP_POINTS"].map((type)=>`<div class="event__type-item">
+  <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${currentType === type ? `checked` : ``}>
+  <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${type}</label>
+</div>`).join(``);
+};
+
+const createEditFormElement = (data) => {
+  const {price, type, city, beginDate, endDate, destination: {description}} = data;
 
   const startTimeFull = dayjs__WEBPACK_IMPORTED_MODULE_1___default()(beginDate).format(`YYYY-MM-DD HH:mm`);
   const endTimeFull = dayjs__WEBPACK_IMPORTED_MODULE_1___default()(endDate).format(`YYYY-MM-DD HH:mm`);
+
+  const typeListTemplate = createTypeListTemplate(type);
 
   return `  <li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
@@ -712,56 +726,7 @@ const createEditFormElement = (point) => {
         <div class="event__type-list">
           <fieldset class="event__type-group">
             <legend class="visually-hidden">Event type</legend>
-
-            <div class="event__type-item">
-              <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi">
-              <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-1">Taxi</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-bus-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="bus">
-              <label class="event__type-label  event__type-label--bus" for="event-type-bus-1">Bus</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-train-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="train">
-              <label class="event__type-label  event__type-label--train" for="event-type-train-1">Train</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-ship-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="ship">
-              <label class="event__type-label  event__type-label--ship" for="event-type-ship-1">Ship</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-transport-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="transport">
-              <label class="event__type-label  event__type-label--transport" for="event-type-transport-1">Transport</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-drive-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="drive">
-              <label class="event__type-label  event__type-label--drive" for="event-type-drive-1">Drive</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" checked>
-              <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-check-in-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="check-in">
-              <label class="event__type-label  event__type-label--check-in" for="event-type-check-in-1">Check-in</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-sightseeing-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="sightseeing">
-              <label class="event__type-label  event__type-label--sightseeing" for="event-type-sightseeing-1">Sightseeing</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-restaurant-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="restaurant">
-              <label class="event__type-label  event__type-label--restaurant" for="event-type-restaurant-1">Restaurant</label>
-            </div>
+            ${typeListTemplate}
           </fieldset>
         </div>
       </div>
@@ -865,11 +830,12 @@ const createEditFormElement = (point) => {
 class Edit extends _smart__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor(point) {
     super();
-    this._point = point;
     this._data = Edit.parsePointToData(point);
     this._clickHandler = this._clickHandler.bind(this);
     this._destinationInputHandler = this._destinationInputHandler.bind(this);
-    this._typeChangeHandler = this._typeChangeHandler.bind(this);
+    this._typeToggleHandler = this._typeToggleHandler.bind(this);
+
+    this._setInnerHandlers();
   }
 
   _clickHandler(evt) {
@@ -883,7 +849,7 @@ class Edit extends _smart__WEBPACK_IMPORTED_MODULE_0__["default"] {
   }
 
   getTemplate() {
-    return createEditFormElement(this._point);
+    return createEditFormElement(this._data);
   }
 
   updateElement() {
@@ -893,6 +859,8 @@ class Edit extends _smart__WEBPACK_IMPORTED_MODULE_0__["default"] {
 
     const newElement = this.getElement();
     parent.replaceChild(newElement, prevElement);
+
+    this.restoreHandlers();
   }
 
   updateData(update, justDataUpdating) {
@@ -909,6 +877,22 @@ class Edit extends _smart__WEBPACK_IMPORTED_MODULE_0__["default"] {
     this.updateElement();
   }
 
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setSumbitHandler(this._callback.submit);
+  }
+
+  _setInnerHandlers() {
+    this.getElement().querySelector(`.event__type-group`).addEventListener(`click`, this._typeToggleHandler);
+    this.getElement().querySelector(`.event__input--destination`).addEventListener(`input`, this._destinationInputHandler);
+  }
+
+  _typeToggleHandler(evt) {
+    evt.preventDefault();
+    const type = evt.target.textContent.toLowerCase();
+    this.updateData({type});
+  }
+
   static parsePointToData(point) {
     return Object.assign({}, point);
   }
@@ -921,13 +905,6 @@ class Edit extends _smart__WEBPACK_IMPORTED_MODULE_0__["default"] {
   _destinationInputHandler(evt) {
     evt.preventDefault();
     this.updateData({description: evt.target.value}, true);
-  }
-
-  _typeChangeHandler(evt) {
-    evt.preventDefault();
-    this.updateData({
-      type: evt.target.value
-    });
   }
 
   setClickHandler(callback) {
@@ -1252,9 +1229,9 @@ class Smart extends _abstract__WEBPACK_IMPORTED_MODULE_0__["default"] {
     parent.replaceChild(newElement, prevElement);
   }
 
-  /* restoreHandlers() {
+  restoreHandlers() {
     throw new Error(`Abstract method not implemented: resetHandlers`);
-  }*/
+  }
 }
 
 
