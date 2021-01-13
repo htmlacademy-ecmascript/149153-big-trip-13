@@ -20,6 +20,9 @@
     "node": "10"
   },
   "dependencies": {
-    "dayjs": "1.9.5"
+    "css-loader": "^5.0.1",
+    "dayjs": "1.9.5",
+    "flatpickr": "^4.6.6",
+    "style-loader": "^2.0.0"
   }
 }
