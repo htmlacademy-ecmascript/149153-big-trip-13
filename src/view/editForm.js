@@ -1,6 +1,9 @@
 import SmartView from "./smart";
 import dayjs from 'dayjs';
 import {TYPE_TRIP_POINTS} from '../utils';
+import flatpickr from 'flatpickr';
+
+import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
 const createTypeListTemplate = (currentType) => {
   return TYPE_TRIP_POINTS.map((type)=>`<div class="event__type-item">
@@ -135,12 +138,18 @@ export default class Edit extends SmartView {
   constructor(point) {
     super();
     this._data = Edit.parsePointToData(point);
+    this._datepickerBeginDate = null;
+    this._datepickerEndDate = null;
+
     this._clickHandler = this._clickHandler.bind(this);
     this._destinationInputHandler = this._destinationInputHandler.bind(this);
     this._typeToggleHandler = this._typeToggleHandler.bind(this);
     this._submitHandler = this._submitHandler.bind(this);
+    this._beginDateChangeHandler = this._beginDateChangeHandler.bind(this);
+    this._endDateChangeHandler = this._endDateChangeHandler.bind(this);
 
     this._setInnerHandlers();
+    this._setDatepicker();
   }
 
   _clickHandler(evt) {
@@ -185,6 +194,7 @@ export default class Edit extends SmartView {
   restoreHandlers() {
     this._setInnerHandlers();
     this.setSumbitHandler(this._callback.submit);
+    this._setDatepicker();
   }
 
   _setInnerHandlers() {
@@ -229,5 +239,46 @@ export default class Edit extends SmartView {
 
   reset(point) {
     this.updateData(Edit.parsePointToData(point));
+  }
+
+  _setDatepicker() {
+    if (this._datepickerBeginDate) {
+      this._datepickerBeginDate.destroy();
+      this._datepickerBeginDate = null;
+    }
+
+    if (this._datepickerEndDate) {
+      this._datepickerEndDate.destroy();
+      this._datepickerEndDate = null;
+    }
+
+    this._datepickerBeginDate = flatpickr(
+        this.getElement().querySelector(`#event-start-time-1`),
+        {
+          dateFormat: `d/m/Y H:i`,
+          defaultDate: this._data.beginDate,
+          onChange: this._beginDateChangeHandler
+        }
+    );
+
+    this._datepickerEndDate = flatpickr(
+        this.getElement().querySelector(`#event-end-time-1`),
+        {
+          dateFormat: `d/m/Y H:i`,
+          defaultDate: this._data.endDate,
+          onChange: this._endDateChangeHandler
+        }
+    );
+  }
+  _beginDateChangeHandler(userDate) {
+    this.updateData({
+      beginDate: dayjs(userDate).hour(23).minute(59).second(59).toDate()
+    });
+  }
+
+  _endDateChangeHandler(userDate) {
+    this.updateData({
+      endDate: dayjs(userDate).hour(23).minute(59).second(59).toDate()
+    });
   }
 }
