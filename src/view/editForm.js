@@ -145,7 +145,8 @@ export default class Edit extends SmartView {
     this._destinationInputHandler = this._destinationInputHandler.bind(this);
     this._typeToggleHandler = this._typeToggleHandler.bind(this);
     this._submitHandler = this._submitHandler.bind(this);
-    this._dueDateChangeHandler = this._dueDateChangeHandler.bind(this);
+    this._beginDateChangeHandler = this._beginDateChangeHandler.bind(this);
+    this._endDateChangeHandler = this._endDateChangeHandler.bind(this);
 
     this._setInnerHandlers();
     this._setDatepicker();
@@ -256,7 +257,7 @@ export default class Edit extends SmartView {
         {
           dateFormat: `d/m/Y H:i`,
           defaultDate: this._data.beginDate,
-          onChange: this._dueDateChangeHandler
+          onChange: this._beginDateChangeHandler
         }
     );
 
@@ -264,12 +265,20 @@ export default class Edit extends SmartView {
         this.getElement().querySelector(`#event-end-time-1`),
         {
           dateFormat: `d/m/Y H:i`,
-          defaultDate: this._data.endDateDate,
-          onChange: this._dueDateChangeHandler
+          defaultDate: this._data.endDate,
+          onChange: this._endDateChangeHandler
         }
     );
   }
-  _dueDateChangeHandler(userData) {
-    console.log(userData);
+  _beginDateChangeHandler(userDate) {
+    this.updateData({
+      beginDate: dayjs(userDate).hour(23).minute(59).second(59).toDate()
+    });
+  }
+
+  _endDateChangeHandler(userDate) {
+    this.updateData({
+      endDate: dayjs(userDate).hour(23).minute(59).second(59).toDate()
+    });
   }
 }
