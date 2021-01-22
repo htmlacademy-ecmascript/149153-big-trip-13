@@ -1,24 +1,9 @@
+import SmartView from './smart';
+import dayjs from 'dayjs';
+import flatpickr from 'flatpickr';
+// import he from 'he';
 
-const createOfferElement = ({title, price}) => {
-  return `
-  <div class="event__offer-selector">
-    <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" checked>
-    <label class="event__offer-label" for="event-offer-luggage-1">
-      <span class="event__offer-title">${title}</span>
-      &plus;&euro;&nbsp;
-      <span class="event__offer-price">${price}</span>
-    </label>
-  </div>`;
-};
-
-export const createAddForm = (point) => {
-  const {offers, destination} = point;
-
-  let offersList = ``;
-
-  for (let i = 0; i < offers.length; i++) {
-    offersList += createOfferElement(offers[i]);
-  }
+const createAddFormElement = () => {
 
   return `<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
@@ -122,17 +107,17 @@ export const createAddForm = (point) => {
       <section class="event__section  event__section--offers">
         <h3 class="event__section-title  event__section-title--offers">Offers</h3>
         <div class="event__available-offers">
-          ${offersList}
+          
         </div>
       </section>
 
       <section class="event__section  event__section--destination">
         <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-        <p class="event__destination-description">${destination.description}</p>
+        <p class="event__destination-description"></p>
 
         <div class="event__photos-container">
           <div class="event__photos-tape">
-            <img class="event__photo" src="${destination.foto}" alt="Event photo">
+            <img class="event__photo" src="" alt="Event photo">
           </div>
         </div>
       </section>
@@ -140,3 +125,176 @@ export const createAddForm = (point) => {
   </form>
 </li>`;
 };
+
+export default class Add extends SmartView {
+  constructor(point) {
+    super();
+    this._data = Add.parsePointToData(point);
+    this._datepickerBeginDate = null;
+    this._datepickerEndDate = null;
+
+    this._clickHandler = this._clickHandler.bind(this);
+    this._destinationInputHandler = this._destinationInputHandler.bind(this);
+    this._typeToggleHandler = this._typeToggleHandler.bind(this);
+    this._submitHandler = this._submitHandler.bind(this);
+    this._beginDateChangeHandler = this._beginDateChangeHandler.bind(this);
+    this._endDateChangeHandler = this._endDateChangeHandler.bind(this);
+    this._formDeleteClickHandler = this._formDeleteClickHandler.bind(this);
+
+    this._setInnerHandlers();
+    this._setDatepicker();
+  }
+
+  _clickHandler(evt) {
+    evt.preventDefault();
+    this._callback.click();
+  }
+
+  _submitHandler(evt) {
+    evt.preventDefault();
+    this._callback.submit(Add.parseDataToPoint(this._data));
+  }
+
+  getTemplate() {
+    return createAddFormElement();
+  }
+
+  updateElement() {
+    let prevElement = this.getElement();
+    const parent = prevElement.parentElement;
+    this.removeElement();
+
+    const newElement = this.getElement();
+    parent.replaceChild(newElement, prevElement);
+
+    this.restoreHandlers();
+  }
+
+  updateData(update, justDataUpdating) {
+    if (!update) {
+      return;
+    }
+
+    this._data = Object.assign({}, this._data, update);
+
+    if (justDataUpdating) {
+      return;
+    }
+
+    this.updateElement();
+  }
+
+  removeElement() {
+    super.removeElement();
+
+    if (this._datepickerBeginDate || this._datepickerEndDate) {
+      this._datepickerBeginDate.destroy();
+      this._datepickerEndDate.destroy();
+      this._datepickerBeginDate = null;
+      this._datepickerEndDate = null;
+    }
+  }
+
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setSumbitHandler(this._callback.submit);
+    this._setDatepicker();
+    this.setDeleteClickHandler(this._callback.deleteClick);
+  }
+
+  _setInnerHandlers() {
+    this.getElement().querySelector(`.event__type-group`).addEventListener(`click`, this._typeToggleHandler);
+    this.getElement().querySelector(`.event__input--destination`).addEventListener(`input`, this._destinationInputHandler);
+  }
+
+  _typeToggleHandler(evt) {
+    evt.preventDefault();
+    const type = evt.target.textContent.toLowerCase();
+    this.updateData({type});
+  }
+
+  static parsePointToData(point) {
+    return Object.assign({}, point);
+  }
+
+  static parseDataToPoint(data) {
+    data = Object.assign({}, data);
+    return data;
+  }
+
+  _destinationInputHandler(evt) {
+    evt.preventDefault();
+    this.updateData({description: evt.target.value}, true);
+  }
+
+  setClickHandler(callback) {
+    this._callback.click = callback;
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._clickHandler);
+  }
+
+  setSumbitHandler(callback) {
+    this._callback.submit = callback;
+    this.getElement().querySelector(`.event--edit`).addEventListener(`submit`, this._submitHandler);
+  }
+
+  setTypeHandler(callback) {
+    this._callback.changeType = callback;
+    this.getElement().querySelector(`.event__type-input`).addEventListener(`change`, this._destinationInputHandler);
+  }
+
+  reset(point) {
+    this.updateData(Add.parsePointToData(point));
+  }
+
+  _setDatepicker() {
+    if (this._datepickerBeginDate) {
+      this._datepickerBeginDate.destroy();
+      this._datepickerBeginDate = null;
+    }
+
+    if (this._datepickerEndDate) {
+      this._datepickerEndDate.destroy();
+      this._datepickerEndDate = null;
+    }
+
+    this._datepickerBeginDate = flatpickr(
+        this.getElement().querySelector(`#event-start-time-1`),
+        {
+          dateFormat: `d/m/Y H:i`,
+          defaultDate: this._data.beginDate,
+          onChange: this._beginDateChangeHandler
+        }
+    );
+
+    this._datepickerEndDate = flatpickr(
+        this.getElement().querySelector(`#event-end-time-1`),
+        {
+          dateFormat: `d/m/Y H:i`,
+          defaultDate: this._data.endDate,
+          onChange: this._endDateChangeHandler
+        }
+    );
+  }
+  _beginDateChangeHandler(userDate) {
+    this.updateData({
+      beginDate: dayjs(userDate).hour(23).minute(59).second(59).toDate()
+    });
+  }
+
+  _endDateChangeHandler(userDate) {
+    this.updateData({
+      endDate: dayjs(userDate).hour(23).minute(59).second(59).toDate()
+    });
+  }
+
+  _formDeleteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.deleteClick(Add.parseDataToPoint(this._data));
+  }
+
+  setDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, this._formDeleteClickHandler);
+  }
+}

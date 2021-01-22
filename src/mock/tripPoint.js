@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import {generateId} from '../utils';
 
 const TYPE_TRIP_POINTS = [`taxi`, `bus`, `train`, `ship`, `transport`, `drive`, `flight`, `check-in`, `sightseeng`, `restaurant`];
 const CITY_NAMES = [`Moscow`, `Ufa`, `Tomsk`, `Paris`, `New York`, `London`, `Salavat`];
@@ -15,8 +16,6 @@ const MIN_PRICE_OFFER = 10;
 const MAX_PRICE_OFFER = 100;
 const TITLE_TEXT = [`Add luggage`, `Switch to comfort class`, `Add meal`, `Choose seats`, `Travel by train`];
 const MAX_OFFERS_COUNT = 5;
-
-const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
 
 const getRandomValue = (array) => {
   return array[Math.floor(Math.random() * array.length)];

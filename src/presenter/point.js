@@ -1,6 +1,7 @@
 import PointEditView from '../view/editForm';
 import PointView from '../view/point';
-import {replace, render, RenderPosition, remove} from '../utils';
+import {replace, render, RenderPosition, remove, isDatesEqual} from '../utils';
+import {UserAction, UpdateType} from "../utils.js";
 
 const Mode = {
   DEFAULT: `DEFAULT`,
@@ -21,6 +22,7 @@ export default class Point {
     this._handelFormClick = this._handelFormClick.bind(this);
     this._handelFormSubmit = this._handelFormSubmit.bind(this);
     this._escapeKeyDownHandler = this._escapeKeyDownHandler.bind(this);
+    this._handleDeleteClick = this._handleDeleteClick.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
   }
 
@@ -37,6 +39,7 @@ export default class Point {
     this._pointComponent.setFavoriteClickHandler(this._handleFavoriteClick);
     this._editComponent.setClickHandler(this._handelFormClick);
     this._editComponent.setSumbitHandler(this._handelFormSubmit);
+    this._editComponent.setDeleteClickHandler(this._handleDeleteClick);
 
     if (prevPointComponent === null || prevEditComponent === null) {
       render(this._pointContainer, this._pointComponent, RenderPosition.BEFOREND);
@@ -96,12 +99,27 @@ export default class Point {
     this._replaceFormToPoint();
   }
 
-  _handelFormSubmit(point) {
-    this._changeData(point);
+  _handelFormSubmit(update) {
+    const isMinorUpdate = !isDatesEqual(this._point.beginDate, update.beginDate) || !isDatesEqual(this._point.endDate, update.endDate);
+    this._changeData(
+        UserAction.UPDATE_TASK,
+        isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+        update);
     this._replaceFormToPoint();
   }
 
   _handleFavoriteClick() {
-    this._changeData(Object.assign({}, this._point, {isFavorite: !this._point.isFavorite}));
+    this._changeData(
+        UserAction.UPDATE_TASK,
+        UpdateType.MINOR,
+        Object.assign({}, this._point, {isFavorite: !this._point.isFavorite}));
+  }
+
+  _handleDeleteClick(point) {
+    this._changeData(
+        UserAction.DELETE_POINT,
+        UpdateType.MINOR,
+        point
+    );
   }
 }
