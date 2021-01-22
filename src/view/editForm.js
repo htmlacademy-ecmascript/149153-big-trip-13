@@ -2,6 +2,7 @@ import SmartView from "./smart";
 import dayjs from 'dayjs';
 import {TYPE_TRIP_POINTS} from '../utils';
 import flatpickr from 'flatpickr';
+import he from 'he';
 
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
@@ -42,7 +43,7 @@ const createEditFormElement = (data) => {
         <label class="event__label  event__type-output" for="event-destination-1">
           ${type}
         </label>
-        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1">
+        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(city)}" list="destination-list-1">
         <datalist id="destination-list-1">
           <option value="Amsterdam"></option>
           <option value="Geneva"></option>
@@ -147,6 +148,7 @@ export default class Edit extends SmartView {
     this._submitHandler = this._submitHandler.bind(this);
     this._beginDateChangeHandler = this._beginDateChangeHandler.bind(this);
     this._endDateChangeHandler = this._endDateChangeHandler.bind(this);
+    this._formDeleteClickHandler = this._formDeleteClickHandler.bind(this);
 
     this._setInnerHandlers();
     this._setDatepicker();
@@ -191,10 +193,22 @@ export default class Edit extends SmartView {
     this.updateElement();
   }
 
+  removeElement() {
+    super.removeElement();
+
+    if (this._datepickerBeginDate || this._datepickerEndDate) {
+      this._datepickerBeginDate.destroy();
+      this._datepickerEndDate.destroy();
+      this._datepickerBeginDate = null;
+      this._datepickerEndDate = null;
+    }
+  }
+
   restoreHandlers() {
     this._setInnerHandlers();
     this.setSumbitHandler(this._callback.submit);
     this._setDatepicker();
+    this.setDeleteClickHandler(this._callback.deleteClick);
   }
 
   _setInnerHandlers() {
@@ -280,5 +294,15 @@ export default class Edit extends SmartView {
     this.updateData({
       endDate: dayjs(userDate).hour(23).minute(59).second(59).toDate()
     });
+  }
+
+  _formDeleteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.deleteClick(Edit.parseDataToPoint(this._data));
+  }
+
+  setDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, this._formDeleteClickHandler);
   }
 }
